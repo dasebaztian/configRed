@@ -16,7 +16,7 @@ FEI, UV.
 - net-tools
 Manual de Uso:
 
-config_red.sh [s h]
+## config_red.sh [s h]
 	Script que permite configurar interfaces de red inalambricas y alambricas de manera automática o manual. Todo esto a través de preguntas al usuario sobre los parámetros de la red y la interfaz deseada
 	Opciones:
 	-s: Setup: Instala los programas necesarios para la configuracion de redes y redes inalambricas

@@ -56,13 +56,14 @@ enconfig_dinamica() {
 }
 enconfig_manual() {
 	read -p "IP del dispositivo: " -r ipdis
-	read -p "Máscara de red en el formato xxx.xxx.xxx.xxx: " -r masred
+	read -p "Préfijo de red: " -r masred
 	read -p "Puerta de enlace: " -r puertaen
 	read -p "Servidor DNS: " -r servdns
-	if test ifconfig "$interfazSelec"; then
-		
-		ifconfig "$interfazSelec"
-	fi
+	ifconfig "$interfazSelec" up
+	ip addr add "$ipdis"/"$masred" dev "$interfazSelec"
+	route add default gw "$puertaen" "$interfazSelec"
+	echo "nameserver $servdns" >> /etc/resolv.conf
+	exit 0
 }
 
 wlconfig_dinamica() {
@@ -81,6 +82,14 @@ wlconfig_manual() {
 	read -p "Máscara de red en el formato xxx.xxx.xxx.xxx: " -r masred
 	read -p "Puerta de enlace: " -r puertaen
 	read -p "Servidor DNS: " -r servdns
+	ip link set "$interfazSelec" up
+	wpa_passphrase "$ESSID" "$pass" > "$ESSID".conf
+	wpa_supplicant -B -D wext -i "$interfazSelec" -c "$ESSID".conf
+	ifconfig "$interfazSelec" up
+	ip addr add "$ipdis"/"$masred" dev "$interfazSelec"
+	route add default gw "$puertaen" "$interfazSelec"
+	echo "nameserver $servdns" >> /etc/resolv.conf
+	exit 0
 }
 
 scan_inalambrica() {
