@@ -51,7 +51,7 @@ obtenerInterfaz() {
 }
 
 enconfig_dinamica() {
-	echo "$interfazSelec"
+	ifconfig "$interfazSelec" up
 	dhclient "$interfazSelec" -v && echo "[*] Se ha configurado correctamente" && exit 0
 }
 enconfig_manual() {
@@ -78,6 +78,9 @@ wlconfig_dinamica() {
 }
 
 wlconfig_manual() {
+	ESSID="$1"
+	echo "Ingresa la contraseña de: $ESSID"
+	read -r pass
 	read -p "IP del dispositivo: " -r ipdis
 	read -p "Máscara de red en el formato xxx.xxx.xxx.xxx: " -r masred
 	read -p "Puerta de enlace: " -r puertaen
@@ -85,7 +88,6 @@ wlconfig_manual() {
 	ip link set "$interfazSelec" up
 	wpa_passphrase "$ESSID" "$pass" > "$ESSID".conf
 	wpa_supplicant -B -D wext -i "$interfazSelec" -c "$ESSID".conf
-	ifconfig "$interfazSelec" up
 	ip addr add "$ipdis"/"$masred" dev "$interfazSelec"
 	route add default gw "$puertaen" "$interfazSelec"
 	echo "nameserver $servdns" >> /etc/resolv.conf
@@ -109,10 +111,10 @@ scan_inalambrica() {
 			echo "[2] Automática" 
 			read -r opcion
 			if [ "$opcion" == 1 ]; then
-				wlconfig_manual
+				wlconfig_manual "$red"
 			fi
 			if [ "$opcion" == 2 ]; then
-				wlconfig_dinamica
+				wlconfig_dinamica "$red"
 			fi
 		fi
 	done
