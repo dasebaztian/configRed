@@ -8,14 +8,7 @@ config_red.sh [s h]
 	Opciones:
 	-s: Setup: Instala los programas necesarios para la configuracion de redes y redes inalambricas
 	-h: Help: Muestra la ayuda del script
-
-	El script primero pregunta al usuario que interfaz de las que se detectan se quiere levantar, despues este procede a identificar si
-	se trata de una red cableada o inálambrica basandose en la primera letra que es la que normalmente representa el tipo de interfaz.
-
-	Una vez identificada se pregunta al usuario si es que se quiere configurar de manera dinamica (DHCP) o de manera manual.
-
-	En el caso de seleccionar una interfaz inalambrica primero se listan las redes WIFI disponibles, donde el usuario debe de seleccionar una usando
-	el nombre de la red. Una vez que se selecciono se le pregunta si se quiere configurar de manera manual o automática
+	Asegurate de tener los permisos necesarios para cambiar la configuración de red
 EOF
 
 }
@@ -138,4 +131,33 @@ main() {
 		scan_inalambrica
 	fi
 }
+
+opcionH=""
+opcionS=""
+while getopts ":hs" opt; do
+    case $opt in
+	h)
+	    opcionH="1";
+
+	    ;;
+	s)
+	    opcionS="1";
+	    ;;
+	"?")
+	    echo "Opción inválida -$OPTARG";
+	    ayuda;
+	    exit 1;
+	    ;;
+	:)
+	    echo "Se esperaba un parámetro en -$OPTARG";
+	    ayuda;
+	    exit 1;
+	    ;;
+    esac
+done
+
+shift $((OPTIND-1)) #borrar todos los params que ya procesó getopts
+
+test "$opcionH" && { ayuda; exit 0; }
+test "$opcionS" && setup
 main
